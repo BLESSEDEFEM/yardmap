@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-
-print(">>> app/main.py is being read, top to bottom")
+from app.config import settings
 
 app = FastAPI()
 
@@ -24,4 +23,9 @@ def read_vehicle_container(vehicles_containers_id: int):
     for vehicle_container in vehicles_containers:
         if vehicle_container["id"] == vehicles_containers_id:
             return vehicle_container
-    return {"detail": "not found"} 
+    return {"detail": "not found"}
+
+
+@app.get("/whoami")
+def whoami():
+    return {"app_name": settings.app_name}
