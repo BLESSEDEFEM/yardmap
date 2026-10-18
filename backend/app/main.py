@@ -1,5 +1,7 @@
-from fastapi import FastAPI
-from app.config import settings
+from fastapi import Depends, FastAPI
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+from app.db import get_db
 
 app = FastAPI()
 
@@ -26,6 +28,7 @@ def read_vehicle_container(vehicles_containers_id: int):
     return {"detail": "not found"}
 
 
-@app.get("/whoami")
-def whoami():
-    return {"app_name": settings.app_name}
+@app.get("/health/db")
+def db_health(db: Session = Depends(get_db)):
+    one = db.execute(text("SELECT 1")).scalar()
+    return {"database": "reachable", "answer": one}
