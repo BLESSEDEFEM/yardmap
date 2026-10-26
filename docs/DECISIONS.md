@@ -187,3 +187,16 @@ is never committed.
 
 Consequence: a leaked credential is rotated, not retracted — and the example
 file is the one place that records what the service needs to run.
+
+## 13 · Yard zone names are unique
+
+Status: accepted
+
+Context: zones were planned with a name and no uniqueness rule. A seed file
+run twice silently created a second "Zone A" and a second "Zone B", and
+nothing could tell the two apart.
+
+Decision: the database enforces one zone per name (yard_zones_name_key).
+
+Consequence: re-running the seed file fails loudly instead of doubling the
+zones, until step 17 makes the seed file safe to re-run.
