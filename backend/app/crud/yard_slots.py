@@ -1,7 +1,7 @@
 """Questions the app asks the database about yard slots."""
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
-from app.models import VehicleContainer, YardSlot
+from app.models import VehicleContainer, YardSlot, User
 
 
 def get_slot(
@@ -25,3 +25,26 @@ def list_slots(
     stmt = stmt.order_by(YardSlot.zone_id, YardSlot.label)
     return list(session.execute(stmt).scalars().all())
     
+    
+def list_slots_with_occupant(
+    session: Session,
+    zone_id: int | None = None
+) -> list[tuple[YardSlot, int | None]]:
+    """Return every slot still in use with the id of what is parked in it, or None.
+
+    Not paged, for the same reason as list_slots.
+    """
+    stmt = (
+        select(YardSlot, VehicleContainer.id)
+        .outerjoin(
+            VehicleContainer,
+            and_(
+                VehicleContainer.current_slot_id == YardSlot.id, VehicleContainer.deleted_at.is_(None),
+            ),
+        )
+        .where(YardSlot.deleted_at.is_(None))
+    )
+    if zone_id is not None:
+        stmt = stmt.where(YardSlot.zone_id == zone_id)
+    stmt = stmt.order_by(YardSlot.zone_id, YardSlot.label)
+    return [(slot, occupant_id) for slot, occupant_id in session.execute(stmt).all()]
