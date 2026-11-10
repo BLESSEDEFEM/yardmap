@@ -53,6 +53,8 @@ The index below groups them by area.
 | Database       | 41  | Every change to the tables' shape is a migration, read before it runs |
 | Seed data      | 15  | Starting rows come from a seed file that is safe to run again         |
 | Queries        | 42  | Only the lists that can grow are limited                              |
+| Database       | 43  | Query functions flush; the caller commits once                        |
+| Queries        | 44  | The yard map is one query, not one per slot                           |
 
 ---
 
@@ -880,3 +882,78 @@ Rejected: limiting every list, or none.
 Consequence: a reviewer may "fix" the unlimited slot list unless the reason
 is written beside it. The paging mechanism (offset or cursor) is still to be
 decided.
+
+
+## 43 · Query functions flush; the caller commits once
+
+Area: Database
+Status: accepted
+
+Context: checking a vehicle/container in is two writes (its status, and a
+movement record). Measured: when the first write was saved on its own and
+the second was refused, the container showed "in yard" with no movement.
+
+Decision: functions in app/crud only add or change rows and flush. Whoever
+made the session saves once, after every write of the action: the address,
+or a script or worker inside session.begin().
+
+Rejected: each query function committing its own write.
+
+Consequence: an action is saved whole or not at all, and the same query
+functions serve addresses, workers and tests. The cost: a forgotten commit
+returns success and saves nothing, so a test must read back through a new
+session.
+
+
+## 44 · The yard map is one query, not one per slot
+
+Area: Queries
+Status: accepted
+
+Context: the map shows every slot and what is parked in it, and a yard has
+a few hundred slots. Measured at 403 slots: one question per slot took
+142–165 ms and 404 questions; one join took about 3 ms and 1 question.
+
+Decision: one outer join from yard_slots to vehicles_containers. The
+"not deleted" condition for vehicles/containers sits inside the join, so a
+free slot stays on the map with no occupant.
+
+Rejected: one question per slot (N+1), two questions matched in Python, and
+a model relationship.
+
+Consequence: the number of questions stays at one, whatever the slot count.
+A condition put in the wrong place silently removes free slots, which was
+tested.
+
+Revisit if: the reply needs large rows from both tables, where two
+questions matched in Python repeat less data.
+
+
+## 45 · The slot suggestion takes the first free slot of the exact size
+
+Area: API
+Status: accepted
+
+Context: #7 asks for one stated rule. Measured while building it: a window
+of no length misses a booking that starts at that moment; comparing size
+words with >= gave a small box a standard slot ("standard" sorts after
+"small"); a deleted vehicle still blocks the slot it was parked in.
+
+Decision: the free slots are the live ones that no row holds (deleted or
+not) and that no open appointment holds between now and two hours from now,
+in zone then label order. The suggestion is the first whose accepts_size
+equals the vehicle/container's size. If none fits, the answer is "no", with
+the reason and the number of free slots looked at. The rule is a function
+in app/slot_suggestion.py that takes values and the current time, and never
+the database.
+
+Rejected: filtering the size inside the query (the "no" could not say what
+was looked at); "a slot takes its size and smaller"; checking only the
+moment of placing.
+
+Consequence: the rule is checked with typed slots and no database. A large
+slot is never used by a small box, and nothing is placed in a slot booked
+within the next two hours. The two hours is one named constant.
+
+Revisit if: the yard runs short of one size (then sizes get an order), or
+two hours proves too short or too long.
