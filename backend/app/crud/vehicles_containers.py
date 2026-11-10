@@ -75,3 +75,9 @@ def set_status(
     vehicle_container.status = status
     session.flush()
     return vehicle_container
+
+
+def get_vehicle_container_in_slot(session: Session, slot_id: int) -> VehicleContainer | None:
+    """Return what holds this slot, deleted or not, or None. Safe: current_slot_id is unique."""
+    stmt = select(VehicleContainer).where(VehicleContainer.current_slot_id == slot_id)
+    return session.execute(stmt).scalar_one_or_none()
