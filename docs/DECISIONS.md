@@ -55,6 +55,8 @@ The index below groups them by area.
 | Queries        | 42  | Only the lists that can grow are limited                              |
 | Database       | 43  | Query functions flush; the caller commits once                        |
 | Queries        | 44  | The yard map is one query, not one per slot                           |
+| API            | 45  | The slot suggestion takes the first free slot of the exact size       |
+| Data model     | 46  | The database refuses overlapping open appointments in one slot        |
 
 ---
 
@@ -957,3 +959,30 @@ within the next two hours. The two hours is one named constant.
 
 Revisit if: the yard runs short of one size (then sizes get an order), or
 two hours proves too short or too long.
+
+
+## 46 · The database refuses overlapping open appointments in one slot
+
+Area: Data model
+Status: accepted
+
+Context: #3 says overlap is a condition the database must enforce. Measured:
+two operators who checked at the same moment both booked one slot for
+overlapping windows, and both bookings were saved. A check in code cannot
+see the other request.
+
+Decision: an exclusion constraint, appointments_no_overlapping_open_window:
+the same slot and overlapping time ranges are refused among open
+appointments (btree_gist extension). And a partial unique index,
+appointments_one_open_per_vehicle_container. The migration adds the
+constraint by hand, because the generator did not see it.
+
+Rejected: checks in code only; locking the slot row before every booking.
+
+Consequence: a race ends in an IntegrityError at the flush, which the
+address turns into a 409; the check in code stays, for the friendly answer
+in the normal case. Looking up "the open appointment" of a container is now
+safe. One check-in per appointment still has no database rule.
+
+Revisit if: bookings need a gap between them (cleaning time), which changes
+what "overlap" means.
