@@ -9,55 +9,57 @@ The index below groups them by area.
 
 ## Index, by area
 
-| Area           | #   | Decision                                                              |
-| -------------- | --- | --------------------------------------------------------------------- |
-| Scope          | 1   | One yard, internal operations only                                    |
-| Scope          | 3   | Appointments reserve a slot for a time window                         |
-| Scope          | 4   | Four roles, one of them external                                      |
-| Scope          | 5   | Hauliers read; staff write                                            |
-| Scope          | 6   | Sign-up, email verification and password reset are out of scope       |
-| Scope          | 16  | Nine features, fourteen things left out on purpose                    |
-| API            | 7   | Slot suggestion is one rule, computed on the server                   |
-| API            | 8   | Reports are requested, then collected                                 |
-| API            | 9   | PATCH, not PUT                                                        |
-| API            | 17  | Check-in and check-out are two addresses                              |
-| API            | 18  | A report is collected through an ordinary read                        |
-| API            | 19  | One address both suggests a slot and places into it                   |
-| API            | 20  | A haulier asking about another haulier's container gets 404, not 403  |
-| API            | 31  | The API contract is written before the code                           |
-| API            | 32  | The contract says plainly that reports do not finish yet              |
-| Data model     | 13  | Yard zone names are unique                                            |
-| Data model     | 14  | Yard slot labels are unique within a zone                             |
-| Data model     | 21  | Rows are numbered; a report job also gets an unguessable id           |
-| Data model     | 22  | Three tables mark rows as gone; four never delete                     |
-| Data model     | 23  | Yard zones and yard slots are two tables                              |
-| Data model     | 24  | The database refuses every delete of a row something points at        |
-| Data model     | 25  | One slot holds at most one vehicle/container                          |
-| Data model     | 39  | The type annotation alone decides whether a column may be empty       |
-| Data model     | 40  | One live report per person and date range                             |
-| Code structure | 10  | The data layer does not speak HTTP                                    |
-| Code structure | 26  | Files are split by layer first, then by the thing they are about      |
-| Code structure | 27  | The slot suggestion has a file of its own, in no layer                |
-| Code structure | 28  | Everything that runs sits under `app/`                                |
-| Repository     | 2   | One repository, two subfolders                                        |
-| Dependencies   | 11  | Dependencies are pinned exactly                                       |
-| Dependencies   | 29  | Ten libraries, each one with a reason                                 |
-| Dependencies   | 30  | bcrypt is used directly, not through passlib                          |
-| Dependencies   | 33  | `requirements.txt` lists only what I asked for                        |
-| Configuration  | 12  | Configuration comes from the environment                              |
-| Configuration  | 34  | `DEBUG` never switches on the framework's detailed error page         |
-| Configuration  | 35  | Secret settings are plain strings                                     |
-| Database       | 36  | The app connects as its own database user, not the superuser          |
-| Database       | 37  | PostgreSQL is installed on my machine                                 |
-| Database       | 38  | Objects stay readable after a commit (`expire_on_commit=False`)       |
-| Database       | 41  | Every change to the tables' shape is a migration, read before it runs |
-| Seed data      | 15  | Starting rows come from a seed file that is safe to run again         |
-| Queries        | 42  | Only the lists that can grow are limited                              |
-| Database       | 43  | Query functions flush; the caller commits once                        |
-| Queries        | 44  | The yard map is one query, not one per slot                           |
-| API            | 45  | The slot suggestion takes the first free slot of the exact size       |
-| Data model     | 46  | The database refuses overlapping open appointments in one slot        |
-| Queries        | 47  | A day means the yard's day, in Lagos                                  |
+| Area           | #   | Decision                                                               |
+| -------------- | --- | ---------------------------------------------------------------------- |
+| Scope          | 1   | One yard, internal operations only                                     |
+| Scope          | 3   | Appointments reserve a slot for a time window                          |
+| Scope          | 4   | Four roles, one of them external                                       |
+| Scope          | 5   | Hauliers read; staff write                                             |
+| Scope          | 6   | Sign-up, email verification and password reset are out of scope        |
+| Scope          | 16  | Nine features, fourteen things left out on purpose                     |
+| API            | 7   | Slot suggestion is one rule, computed on the server                    |
+| API            | 8   | Reports are requested, then collected                                  |
+| API            | 9   | PATCH, not PUT                                                         |
+| API            | 17  | Check-in and check-out are two addresses                               |
+| API            | 18  | A report is collected through an ordinary read                         |
+| API            | 19  | One address both suggests a slot and places into it                    |
+| API            | 20  | A haulier asking about another haulier's container gets 404, not 403   |
+| API            | 31  | The API contract is written before the code                            |
+| API            | 32  | The contract says plainly that reports do not finish yet               |
+| Data model     | 13  | Yard zone names are unique                                             |
+| Data model     | 14  | Yard slot labels are unique within a zone                              |
+| Data model     | 21  | Rows are numbered; a report job also gets an unguessable id            |
+| Data model     | 22  | Three tables mark rows as gone; four never delete                      |
+| Data model     | 23  | Yard zones and yard slots are two tables                               |
+| Data model     | 24  | The database refuses every delete of a row something points at         |
+| Data model     | 25  | One slot holds at most one vehicle/container                           |
+| Data model     | 39  | The type annotation alone decides whether a column may be empty        |
+| Data model     | 40  | One live report per person and date range                              |
+| Code structure | 10  | The data layer does not speak HTTP                                     |
+| Code structure | 26  | Files are split by layer first, then by the thing they are about       |
+| Code structure | 27  | The slot suggestion has a file of its own, in no layer                 |
+| Code structure | 28  | Everything that runs sits under `app/`                                 |
+| Repository     | 2   | One repository, two subfolders                                         |
+| Dependencies   | 11  | Dependencies are pinned exactly                                        |
+| Dependencies   | 29  | Ten libraries, each one with a reason                                  |
+| Dependencies   | 30  | bcrypt is used directly, not through passlib                           |
+| Dependencies   | 33  | `requirements.txt` lists only what I asked for                         |
+| Configuration  | 12  | Configuration comes from the environment                               |
+| Configuration  | 34  | `DEBUG` never switches on the framework's detailed error page          |
+| Configuration  | 35  | Secret settings are plain strings                                      |
+| Database       | 36  | The app connects as its own database user, not the superuser           |
+| Database       | 37  | PostgreSQL is installed on my machine                                  |
+| Database       | 38  | Objects stay readable after a commit (`expire_on_commit=False`)        |
+| Database       | 41  | Every change to the tables' shape is a migration, read before it runs  |
+| Seed data      | 15  | Starting rows come from a seed file that is safe to run again          |
+| Queries        | 42  | Only the lists that can grow are limited                               |
+| Database       | 43  | Query functions flush; the caller commits once                         |
+| Queries        | 44  | The yard map is one query, not one per slot                            |
+| API            | 45  | The slot suggestion takes the first free slot of the exact size        |
+| Data model     | 46  | The database refuses overlapping open appointments in one slot         |
+| Queries        | 47  | A day means the yard's day, in Lagos                                   |
+| Queries        | 48  | A report job changes state in one statement, with the state it expects |
+
 ---
 
 ## 1 · One yard, internal operations only
@@ -1008,3 +1010,27 @@ Consequence: answers do not change when the connection's clock does.
 Every new filter by day must use app/yard_day.py.
 
 Revisit if: the yard moves, or a second yard in another zone is added.
+
+## 48 · A report job changes state in one statement, with the state it expects
+
+Area: Queries
+Status: accepted
+
+Context: a job id can reach two workers (a retry, a restarted worker).
+Measured: reading the row, checking the state in Python, then writing let
+both workers claim the same job.
+
+Decision: claiming, finishing and failing a job are each one UPDATE whose
+WHERE holds the id and the expected state; rowcount 1 means this worker
+changed it. A timer fails jobs that have been running too long, with a
+plain reason; it takes the current time as an argument.
+
+Rejected: read-then-write; SELECT ... FOR UPDATE then a second statement;
+the database as the queue with SKIP LOCKED (Celery is the queue).
+
+Consequence: exactly one worker builds each report, and an ended job never
+changes again. A job stuck in "running" blocks the same report until the
+timer fails it.
+
+Revisit if: reports need retries (then requeue while attempts < 3), or
+workers poll the database instead of Celery.
