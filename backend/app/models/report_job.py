@@ -1,8 +1,7 @@
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import (BigInteger, Date, DateTime, ForeignKey, Index, Text,
-                        Uuid, func, text)
+from sqlalchemy import (BigInteger, CheckConstraint, Date, DateTime, ForeignKey, Index, Text, Uuid, func, text)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base
@@ -20,6 +19,10 @@ class ReportJob(Base):
             "to_date",
             unique=True,
             postgresql_where=text("state IN ('queued', 'running')"),
+        ),
+        CheckConstraint(
+            "state IN ('queued', 'running', 'done', 'failed')",
+            name="report_jobs_state_check",
         ),
     )
 

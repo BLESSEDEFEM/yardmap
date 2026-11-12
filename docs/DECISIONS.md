@@ -59,6 +59,7 @@ The index below groups them by area.
 | Data model     | 46  | The database refuses overlapping open appointments in one slot         |
 | Queries        | 47  | A day means the yard's day, in Lagos                                   |
 | Queries        | 48  | A report job changes state in one statement, with the state it expects |
+| Data model     | 49  | The database refuses unknown kinds and states, and a second check-in   |
 
 ---
 
@@ -1034,3 +1035,27 @@ timer fails it.
 
 Revisit if: reports need retries (then requeue while attempts < 3), or
 workers poll the database instead of Celery.
+
+## 49 · The database refuses unknown kinds and states, and a second check-in
+
+Area: Data model
+Status: accepted
+
+Context: the movement kinds and job states were constants in code only.
+Measured: a movement with kind "chek_in" was saved. Step 4 left "one
+check-in per appointment" with no database rule.
+
+Decision: movements_kind_check (kind is check_in, move or check_out),
+report_jobs_state_check (state is queued, running, done or failed), and a
+partial unique index movements_one_check_in_per_appointment (one check_in
+row per appointment). The migration adds both CHECK constraints by hand,
+because the generator did not see them.
+
+Rejected: PostgreSQL enum types (hard to change); lookup tables (one more
+join for fixed words); checks in code only.
+
+Consequence: every writer is refused, not only the app. A new kind or state
+needs a migration. Endpoint 6 maps the index's name to 409 "already
+checked in".
+
+Revisit if: kinds or states start changing often (then a lookup table).
