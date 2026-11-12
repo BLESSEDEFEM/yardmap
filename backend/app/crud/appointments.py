@@ -49,14 +49,14 @@ def create_appointment(
 
 
 def get_open_appointment_for(
-    session: Session, vehichle_container_id: int,
+    session: Session, vehicle_container_id: int,
 ) -> Appointment | None:
     """Return this vehicle/container's open appointment, or None.
 
     At most one can exist: appointments_one_open_per_vehicle_container.
     """
     stmt = select(Appointment).where(
-        Appointment.vehicle_container_id == vehichle_container_id,
+        Appointment.vehicle_container_id == vehicle_container_id,
         Appointment.status == "open",
     )
     return session.execute(stmt).scalar_one_or_none()
