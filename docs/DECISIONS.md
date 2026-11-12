@@ -57,7 +57,7 @@ The index below groups them by area.
 | Queries        | 44  | The yard map is one query, not one per slot                           |
 | API            | 45  | The slot suggestion takes the first free slot of the exact size       |
 | Data model     | 46  | The database refuses overlapping open appointments in one slot        |
-
+| Queries        | 47  | A day means the yard's day, in Lagos                                  |
 ---
 
 ## 1 · One yard, internal operations only
@@ -986,3 +986,25 @@ safe. One check-in per appointment still has no database rule.
 
 Revisit if: bookings need a gap between them (cleaning time), which changes
 what "overlap" means.
+
+## 47 · A day means the yard's day, in Lagos
+
+Area: Queries
+Status: accepted
+
+Context: endpoints 5 and 8 filter by "a day", and the report counts per
+day. The app's connection will use UTC. Measured: a check-out at 00:30 on
+4 Nov, Lagos time, fell on 3 Nov when days were cut in UTC.
+
+Decision: a day runs from midnight to the next midnight in Africa/Lagos.
+app/yard_day.py names the zone once (YARD_TZ) and turns a day into two
+moments; counts per day use timezone('Africa/Lagos', moved_at) in SQL. An
+appointment is on a day when its window overlaps that day.
+
+Rejected: UTC days; a naive midnight; date() on the connection's clock; a
+fixed +01:00 offset.
+
+Consequence: answers do not change when the connection's clock does.
+Every new filter by day must use app/yard_day.py.
+
+Revisit if: the yard moves, or a second yard in another zone is added.
