@@ -479,7 +479,7 @@ WHAT COMES BACK · 200 OK
    a list, NEWEST FIRST.  Each item carries:
    id                    whole number   never empty
    vehicle_container_id  whole number   never empty
-   kind                  text           never empty   what happened
+   kind                  text           never empty   "check_in", "move" or "check_out"
    from_slot_id          whole number   MAY BE EMPTY  empty means it was
                                                       in no slot before
                                                       this — which is
