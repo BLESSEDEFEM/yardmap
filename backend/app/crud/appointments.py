@@ -1,10 +1,11 @@
 """Questions the app asks the database about appointments."""
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models import Appointment
+from app.models import Appointment, VehicleContainer
+from app.yard_day import day_window
 
 
 def list_overlapping_appointments(
@@ -60,3 +61,35 @@ def get_open_appointment_for(
         Appointment.status == "open",
     )
     return session.execute(stmt).scalar_one_or_none()
+
+
+def get_appointment(session: Session, appointment_id: int) -> Appointment | None:
+    """Return the appointment with this id, or None if there is none."""
+    return session.get(Appointment, appointment_id)
+
+
+def list_appointments(
+    session: Session,
+    *,
+    status: str | None = None,
+    day: date | None = None,
+    haulier_id: int | None = None,
+    limit: int = 50,
+    offset: int = 0,
+) -> list[Appointment]:
+    """Return appointments earliest first, narrowed by the filters given.
+
+    A day is the yard's day (Lagos); an appointment is on a day when its window overlaps it.
+    """
+    stmt = select(Appointment)
+    if status is not None:
+        stmt = stmt.where(Appointment.status == status)
+    if day is not None:
+        start, end = day_window(day)
+        stmt = stmt.where(Appointment.reserved_from < end, Appointment.reserved_until > start)
+    if haulier_id is not None:
+        stmt = stmt.join(
+            VehicleContainer, VehicleContainer.id == Appointment.vehicle_container_id
+        ).where(VehicleContainer.haulier_id == haulier_id)
+    stmt = stmt.order_by(Appointment.reserved_from, Appointment.id).limit(limit).offset(offset)
+    return list(session.execute(stmt).scalars().all())
