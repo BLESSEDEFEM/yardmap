@@ -1,6 +1,8 @@
 # YardMap
 
-A yard management system
+Backend for running a container yard: vehicle and container registration, time-windowed slot booking, and an append-only gate-movement history. FastAPI · SQLAlchemy 2 · PostgreSQL 16 · Alembic.
+
+**Status:** in active development — sections below are filled in as each part is built.
 
 ## What it does
 
